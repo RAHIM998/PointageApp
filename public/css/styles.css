@@ -1,0 +1,33 @@
+
+@layer reset {
+    button {
+        all: unset;
+        margin-left: 20px;
+        color: dodgerblue
+    }
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 10px 0;
+    width: 230px;
+    overflow-x: hidden;
+}
+
+.ul{
+    padding: 28px 0;
+}
+.main-content {
+    margin-left: 230px;
+}
+
+.back{
+    padding-top: 652px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
