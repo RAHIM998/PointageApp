@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -59,12 +60,17 @@ class User extends Authenticatable
         return $this->role ==='admin';
     }
 
-    public function paiement() : BelongsTo
+    public function paiement() : HasMany
     {
-        return $this->belongsTo(Paiement::class);
+        return $this->hasMany(Paiement::class);
     }
     public function pointages()
     {
         return $this->hasMany(Pointage::class);
+    }
+
+    public function avance():HasMany
+    {
+        return $this->hasMany(Avance::class);
     }
 }

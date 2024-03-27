@@ -14,8 +14,7 @@ class PointageController extends Controller
     //Fonction d'affichages de la liste des prensents
     public function index()
     {
-        $now = Carbon::now();
-        $datejour = $now->toDateString();
+        $datejour = $this->DateDays();
         $listePresent = Pointage::where('date', $datejour)->get();
         $role = $this->IsAdmin();
         $listePresentUser = [];
@@ -53,9 +52,7 @@ class PointageController extends Controller
         $user = User::where('qrcode', $qrCode)->first();
 
         if ($user) {
-            $now = Carbon::now();
-            $dateJour = $now->toDateString();
-
+            $dateJour = $this->DateDays();
             // Compte le nombre total de pointages pour l'utilisateur dans la journée
             $nbPointageJournalier = Pointage::where('user_id', $user->id)
                 ->whereDate('date', $dateJour)
@@ -66,8 +63,8 @@ class PointageController extends Controller
                     // Crée un nouvel enregistrement de pointage avec l'heure d'entrée actuelle
                     $pointage = new Pointage([
                         'user_id' => $user->id,
-                        'date' => $now->toDateString(),
-                        'heure_entree' =>  $now->toTimeString(),
+                        'date' => Carbon::now()->toDateString(),
+                        'heure_entree' =>  Carbon::now()->toTimeString(),
                     ]);
                     $pointage->save();
                     return response()->json(['success' => true, 'message' => 'Bienvenue M./Mme ' . $user->nom]);
@@ -78,7 +75,7 @@ class PointageController extends Controller
                         ->whereDate('date', $dateJour)
                         ->first();
                     $existPointage->update([
-                        'heure_sortie' => $now->toTimeString()
+                        'heure_sortie' => Carbon::now()->toTimeString()
                     ]);
                     return response()->json(['success' => true, 'message' => 'Au revoir M./Mme ' . $user->nom . ' et à bientôt']);
                     break;

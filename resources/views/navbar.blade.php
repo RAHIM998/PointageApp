@@ -37,6 +37,11 @@
                             Présence du jour
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{route('Paiements.index')}}">
+                            Paiements
+                        </a>
+                    </li>
                     <!-- Ajoute d'autres liens selon tes besoins -->
                 </ul>
             </div>

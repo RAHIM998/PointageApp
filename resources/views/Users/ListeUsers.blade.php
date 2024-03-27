@@ -7,6 +7,17 @@
                 @csrf
                 <button type="submit" class="btn btn-primary">Ajouter</button>
             </form>
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
             <br>
             <table class="table table-striped">
                 <thead>
@@ -30,13 +41,19 @@
                             {!! DNS2D::getBarcodeHTML("$u->qrcode", 'QRCODE', 4, 4) !!}
                         </td>
                         <td>
-                            <form method="post" action="{{route('User.destroy', $u->id)}}">
+                            <form method="post" action="{{route('User.destroy', $u->id)}}" id="delete{{$u->id}}">
                                 @csrf
                                 @method('delete')
-                                <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="return confirmDelete({{$u->id}})" class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
                             </form>
+
                             <a href="{{route('User.edit', $u->id)}}" class="btn btn-outline-primary btn-sm"><i class="fa-regular fa-pen-to-square"></i></a>
                             <a href="{{route('User.show', $u->id)}}" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-circle-info"></i></a>
+
+                            <form method="post" action="{{route('generatebulletin', $u->id)}}" id="pay{{$u->id}}">
+                                @csrf
+                                <button onclick="return confirmPay({{$u->id}})" type="submit" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-dollar-sign"></i></button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
@@ -45,4 +62,17 @@
             </table>
         </div>
     </div>
+
+    <script>
+
+        function confirmDelete(id) {
+            return confirm("Êtes-vous sûr de vouloir supprimer cet élément ?");
+        }
+
+        function confirmPay(id) {
+            return confirm("Êtes-vous sûr de vouloir générer ce paiement ?");
+        }
+
+    </script>
+
 @endsection

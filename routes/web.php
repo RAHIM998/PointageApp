@@ -19,6 +19,14 @@ Route::resource('User', \App\Http\Controllers\Usercontroller::class);
 //Page de scanner
 Route::get('Presencedujour', [PointageController::class, 'index'])->name('AffichagePresence');
 Route::get('Pointage', [PointageController::class, 'create'])->name('Pointage');
-Route::post('Pointage/post', [PointageController::class, 'post'])->name('recupQrcode');
+Route::post('Pointage/post', [PointageController::class, 'store'])->name('recupQrcode');
 Route::delete('Pointage/{id}', [PointageController::class, 'destroy'])->name('Suppresion');
 Route::get('Pointage/{id}', [PointageController::class, 'show'])->name('Details');
+
+//Route des avances
+Route::resource('Avance', \App\Http\Controllers\AvanceController::class);
+
+//Routes des paiements
+Route::resource('Paiements', \App\Http\Controllers\Paiementcontroller::class);
+Route::post('Paiements/{id}', [\App\Http\Controllers\Paiementcontroller::class, 'store'])->name('generatebulletin');
+Route::get('BulletinPaie', [\App\Http\Controllers\Paiementcontroller::class, 'generateBulletin'])->name('BulletinPaie');

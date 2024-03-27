@@ -78,7 +78,7 @@ class UserController extends Controller
         $userEdit = User::find($id);
         if ($userEdit){
             $userEdit -> update($validateData);
-            return redirect()->route('User.index')->with('succes', 'Utilisateur modifié avec succés !');
+            return redirect()->route('User.index')->with('success', 'Utilisateur modifié avec succés !');
         }
     }
 
@@ -86,6 +86,6 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         User::destroy($id);
-        return redirect()->route('User.index')->with('succes', 'Utilisateur supprimé avec succés !');
+        return redirect()->route('User.index')->with('success', 'Utilisateur supprimé avec succés !');
     }
 }
