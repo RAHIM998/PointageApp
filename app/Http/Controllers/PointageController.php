@@ -15,26 +15,11 @@ class PointageController extends Controller
     public function index()
     {
         $datejour = $this->DateDays();
-        $listePresent = Pointage::where('date', $datejour)->get();
         $role = $this->IsAdmin();
-        $listePresentUser = [];
-
-        foreach ($listePresent as $PointageExist){
-            $user = User::find($PointageExist->user_id);
-            $id = $PointageExist->id;
-            $heureEntree = $PointageExist->heure_entree;
-            $heureSortie = $PointageExist->heure_sortie;
-
-            $listePresentUser[]= [
-                'nom' => $user ? $user->nom : 'Aucun utilisateur trouvé !',
-                'prenom' => $user ? $user->prenom : 'Aucun utilisateur trouvé !',
-                'id' =>$id,
-                'heure_entree' => $heureEntree,
-                'heure_sortie' => $heureSortie,
-            ];
-        }
-
-        return view('Pointage.PresenceJour', ['presence' => $listePresentUser, 'role' => $role]);
+        $listePresent = Pointage::with('user')
+            ->where('date', $datejour)
+            ->get();
+        return view('Pointage.PresenceJour', ['presence' => $listePresent, 'role' => $role]);
     }
 
     //Fonction d'appel du scanner
@@ -45,7 +30,7 @@ class PointageController extends Controller
     }
 
     //Fonction de sauvegarde des Scanner
-    public function post(Request $request)
+    public function store(Request $request)
     {
         // Récupère le code QR envoyé depuis le frontend
         $qrCode = $request->input('qrCode');
@@ -56,33 +41,28 @@ class PointageController extends Controller
             // Compte le nombre total de pointages pour l'utilisateur dans la journée
             $nbPointageJournalier = Pointage::where('user_id', $user->id)
                 ->whereDate('date', $dateJour)
-                ->count();
+                ->get();
 
-            switch ($nbPointageJournalier) {
-                case 0:
-                    // Crée un nouvel enregistrement de pointage avec l'heure d'entrée actuelle
-                    $pointage = new Pointage([
-                        'user_id' => $user->id,
-                        'date' => Carbon::now()->toDateString(),
-                        'heure_entree' =>  Carbon::now()->toTimeString(),
-                    ]);
+            if ($nbPointageJournalier->isNotEmpty()) {
+                foreach ($nbPointageJournalier as $pointage) {
+                    // Vérifie si la propriété heure_sortie est déjà définie
+                    if (!is_null($pointage->heure_sortie)) {
+                        return response()->json(['success' => true, 'message' => 'Désolé M/Mme ' . $user->nom . ', vous avez déjà effectué votre pointage de sortie']);
+                    }
+                    // Met à jour la propriété heure_sortie pour cet objet pointage
+                    $pointage->heure_sortie = Carbon::now()->toTimeString();
                     $pointage->save();
-                    return response()->json(['success' => true, 'message' => 'Bienvenue M./Mme ' . $user->nom]);
-                    break;
-                case 1:
-                    // Met à jour l'enregistrement de pointage existant avec l'heure de sortie actuelle
-                    $existPointage = Pointage::where('user_id', $user->id)
-                        ->whereDate('date', $dateJour)
-                        ->first();
-                    $existPointage->update([
-                        'heure_sortie' => Carbon::now()->toTimeString()
-                    ]);
-                    return response()->json(['success' => true, 'message' => 'Au revoir M./Mme ' . $user->nom . ' et à bientôt']);
-                    break;
-                default:
-                    // L'utilisateur a déjà pointé deux fois aujourd'hui
-                    return response()->json(['success' => false, 'message' => 'Désolé M/Mme'.$user->nom.', vous avez déjà effectué votre pointage de sortie']);
-                    break;
+                }
+                return response()->json(['success' => true, 'message' => 'Au revoir M./Mme ' . $user->nom . ' et à bientôt', 'nb' => $nbPointageJournalier]);
+            } else {
+                // Le nombre total de pointages pour l'utilisateur dans la journée est vide, donc nous devons créer un nouveau pointage
+                $pointage = new Pointage([
+                    'user_id' => $user->id,
+                    'date' => Carbon::now()->toDateString(),
+                    'heure_entree' => Carbon::now()->toTimeString(),
+                ]);
+                $pointage->save();
+                return response()->json(['success' => true, 'message' => 'Bienvenue M./Mme ' . $user->nom]);
             }
         } else {
             // L'utilisateur n'a pas été trouvé
@@ -90,23 +70,23 @@ class PointageController extends Controller
         }
     }
 
+
     //Affichage des détails des employé present de la journée
     public function show(string $id)
     {
         try {
             $role = $this->IsAdmin();
-            $pointed = Pointage::find($id);
+            $pointed = Pointage::with('user')->find($id);
             if ($pointed){
-                $user = User::find($pointed->user_id);
-                return view('Pointage.ShowUsers', ['pointer' =>$pointed, 'emp' => $user, 'role' =>$role]);
-            }else{
+                return view('Pointage.ShowUsers', ['pointer' => $pointed, 'role' => $role]);
+            } else {
                 echo "Désolé cet identifiant n'existe pas !";
             }
-        }catch (Exception $exception){
+        } catch (Exception $exception){
             $exception->getMessage();
         }
-
     }
+
 
     //Suppression
     public function destroy(string $id)

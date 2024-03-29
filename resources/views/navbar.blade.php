@@ -48,11 +48,12 @@
             @auth
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <form action="{{route('logout')}}" method="post">
+                        <form action="{{route('logout')}}" method="post" id="logout-form">
                             @csrf
                             @method('delete')
-                            <button class="nav-link" style="margin-left: 15px;">Se déconnecter </button>
+                            <button class="nav-link" style="margin-left: 15px;" onclick="return confirmLogout()">Se déconnecter</button>
                         </form>
+
                     </li>
                 </ul>
             @endauth
@@ -68,5 +69,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://kit.fontawesome.com/a1e85ba704.js" crossorigin="anonymous"></script>
+<script>
+    function confirmLogout() {
+        if (confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
+            document.getElementById('logout-form').submit();
+        }
+        return false; // Empêche le formulaire de se soumettre automatiquement
+    }
+</script>
+
 </body>
 </html>

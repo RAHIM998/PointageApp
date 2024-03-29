@@ -16,8 +16,10 @@ class Paiementcontroller extends Controller
     //Lister les paiements
     public function index()
     {
-        $paiement = Paiement::with('user')->get();
-        return view('Paiements.ListePaiements', ['paiements' => $paiement]);
+        $mois = Carbon::now()->month;
+        $paiements = Paiement::with('user')->whereMonth('created_at', $mois)->get();
+        return view('Paiements.ListePaiements', ['paiements' => $paiements]);
+
     }
 
     //Génération de la fiche de paie
@@ -57,21 +59,21 @@ class Paiementcontroller extends Controller
                     'montant' => $salaireBrut - $avances,
                     'mois' => $mois,
                     'annee' => $annee,
-                    'nbheure_travaile' => $totalHeuresTravaille
+                    'nbheure_travaille' => $totalHeuresTravaille
                 ]);
                 $paie->save();
 
-                return redirect()->route('BulletinPaie')->with('success', 'Bulletin générer avec succès !');
+                return redirect()->route('BulletinPaie', ['id' =>$id])->with('success', 'Bulletin générer avec succès !');
             }else{
                 Paiement::create([
                     'user_id' => $users->id,
                     'montant' => $salaireBrut,
                     'mois' => $mois,
                     'annee' => $annee,
-                    'nbheure_travaile' => $totalHeuresTravaille
+                    'nbheure_travaille' => $totalHeuresTravaille
                 ]);
 
-                return redirect()->route('BulletinPaie')->with('success', 'Bulletin générer avec succès !');
+                return redirect()->route('BulletinPaie',  ['id' =>$id])->with('success', 'Bulletin générer avec succès !');
             }
         }else{
             return redirect()->route('User.index')->with('error', 'Désolé cet employé n\'existe pas ou a déjà été payé !');
@@ -97,12 +99,11 @@ class Paiementcontroller extends Controller
     //Mise à jour
     public function update(Request $request, string $id)
     {
-        $PaiementEdit = Paiement::find($id);
-        $cni = $request->input('carte');
-        $user = User::where('cni', $cni)->first();
-        if ($PaiementEdit && $user) {
+        $PaiementEdit = Paiement::with('user')->find($id);
+
+        if ($PaiementEdit && $PaiementEdit->user) {
             $PaiementEdit->update([
-                'user_id' => $user->id,
+                'user_id' => $PaiementEdit->user->id,
                 'montant' => $request->montant,
                 'mois'=> $request->mois,
                 'annee' => $request->an,
@@ -117,14 +118,38 @@ class Paiementcontroller extends Controller
     //Suppression
     public function destroy(string $id)
     {
-        $PaiementDelete = Paiement::destroy($id);
+        Paiement::destroy($id);
         return redirect()->route('Paiements.index')->with('success', 'Paiements suprimé avec succès !');
     }
 
-    public function generateBulletin()
+    //Fonction de génération du bulletin de paie
+    public function generateBulletin(string $id)
     {
-        $pdf = PDF::loadView('Paiements.BulletinPaie');
+        $moisActuel = now()->format('m');
+        $anneeActuelle = now()->format('Y');
+        $paiements = Paiement::with('user')
+            ->where('user_id', $id)
+            ->whereMonth('created_at', $moisActuel)
+            ->whereYear('created_at', $anneeActuelle)
+            ->get();
+        $avances = Avance::where('user_id', $id)
+            ->whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->sum('montant');
 
-        return $pdf->download('BulletinPaie.pdf');
+        $invoiceId = $paiements->first()->id;
+        $orderId = $paiements->first()->user->cni;
+        $orderDate = now()->format('d-m-Y');
+
+        $pdf = PDF::loadView('Paiements.BulletinPaie', [
+            'paie' => $paiements,
+            'avance' => $avances,
+            'invoiceId' => $invoiceId,
+            'orderId' => $orderId,
+            'orderDate' => $orderDate,
+        ]);
+
+        return $pdf->stream('BulletinPaie.pdf');
     }
+
 }

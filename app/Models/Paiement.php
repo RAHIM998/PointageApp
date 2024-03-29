@@ -16,7 +16,7 @@ class Paiement extends Model
         'montant',
         'mois',
         'annee',
-        'nbheure_travaile'
+        'nbheure_travaille'
     ];
 
     public function user():BelongsTo

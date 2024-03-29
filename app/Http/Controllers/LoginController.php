@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mockery\Exception;
@@ -41,9 +42,12 @@ class LoginController extends Controller
     }
 
     //Méthode de déconnexion
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
-        return view('Auth.login');
+        $request->session()->invalidate();
+        return redirect('/');
     }
+
+
 }

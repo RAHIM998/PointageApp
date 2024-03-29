@@ -17,6 +17,8 @@ class Pointage extends Model
         'heure_sortie',
     ];
 
+
+
     public function user()
     {
         return $this->belongsTo(User::class);

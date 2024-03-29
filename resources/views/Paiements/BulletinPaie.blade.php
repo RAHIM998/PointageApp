@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>How To Generate Invoice PDF In Laravel 9 - Techsolutionstuff</title>
+    <title>Bulletin de paie de {{$paie->first()->user->prenom}}</title>
 </head>
 <style type="text/css">
     body{
@@ -78,112 +78,45 @@
 </style>
 <body>
 <div class="head-title">
-    <h1 class="text-center m-0 p-0">Invoice</h1>
+    <h1 class="text-center m-0 p-0">Gestion de pointage</h1>
 </div>
 <div class="add-detail mt-10">
     <div class="w-50 float-left mt-10">
-        <p class="m-0 pt-5 text-bold w-100">Invoice Id - <span class="gray-color">#1</span></p>
-        <p class="m-0 pt-5 text-bold w-100">Order Id - <span class="gray-color">AB123456A</span></p>
-        <p class="m-0 pt-5 text-bold w-100">Order Date - <span class="gray-color">22-01-2023</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Id du paiement : <span class="gray-color">{{$invoiceId}}</span></p>
+        <p class="m-0 pt-5 text-bold w-100">identifiant de l'employé : <span class="gray-color">{{$orderId}}</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Date de paiemen : <span class="gray-color">{{$orderDate}}</span></p>
     </div>
-    <div class="w-50 float-left logo mt-10">
-        <img src="https://techsolutionstuff.com/frontTheme/assets/img/logo_200_60_dark.png" alt="Logo">
-    </div>
+    <div class="w-50 float-left logo mt-10">Gestion de pointage</div>
     <div style="clear: both;"></div>
 </div>
 <div class="table-section bill-tbl w-100 mt-10">
-    <table class="table w-100 mt-10">
+    <table class="table table-striped">
+        <thead>
         <tr>
-            <th class="w-50">From</th>
-            <th class="w-50">To</th>
+            <th scope="col">Prénom</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Email</th>
+            <th scope="col">Heurers travaillées</th>
+            <th scope="col">Avances recues</th>
+            <th scope="col">Montant payé</th>
+            <th scope="col">Date de paiement</th>
         </tr>
-        <tr>
-            <td>
-                <div class="box-text">
-                    <p>Mountain View,</p>
-                    <p>California,</p>
-                    <p>United States</p>
-                    <p>Contact: (650) 253-0000</p>
-                </div>
-            </td>
-            <td>
-                <div class="box-text">
-                    <p> 410 Terry Ave N,</p>
-                    <p>Seattle WA 98109,</p>
-                    <p>United States</p>
-                    <p>Contact: 1-206-266-1000</p>
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
-<div class="table-section bill-tbl w-100 mt-10">
-    <table class="table w-100 mt-10">
-        <tr>
-            <th class="w-50">Payment Method</th>
-            <th class="w-50">Shipping Method</th>
-        </tr>
-        <tr>
-            <td>Cash On Delivery</td>
-            <td>Free Shipping - Free Shipping</td>
-        </tr>
-    </table>
-</div>
-<div class="table-section bill-tbl w-100 mt-10">
-    <table class="table w-100 mt-10">
-        <tr>
-            <th class="w-50">SKU</th>
-            <th class="w-50">Product Name</th>
-            <th class="w-50">Price</th>
-            <th class="w-50">Qty</th>
-            <th class="w-50">Subtotal</th>
-            <th class="w-50">Tax Amount</th>
-            <th class="w-50">Grand Total</th>
-        </tr>
-        <tr align="center">
-            <td>M101</td>
-            <td>Andoid Smartphone</td>
-            <td>$500.2</td>
-            <td>3</td>
-            <td>$1500</td>
-            <td>$50</td>
-            <td>$1550.20</td>
-        </tr>
-        <tr align="center">
-            <td>M102</td>
-            <td>Andoid Smart Phone</td>
-            <td>$250</td>
-            <td>2</td>
-            <td>$500</td>
-            <td>$50</td>
-            <td>$550.00</td>
-        </tr>
-        <tr align="center">
-            <td>T1010</td>
-            <td>Andoid Smartphone</td>
-            <td>$1000</td>
-            <td>5</td>
-            <td>$5000</td>
-            <td>$500</td>
-            <td>$5500.00</td>
-        </tr>
-        <tr>
-            <td colspan="7">
-                <div class="total-part">
-                    <div class="total-left w-85 float-left" align="right">
-                        <p>Sub Total</p>
-                        <p>Tax (18%)</p>
-                        <p>Total Payable</p>
-                    </div>
-                    <div class="total-right w-15 float-left text-bold" align="right">
-                        <p>$7600</p>
-                        <p>$400</p>
-                        <p>$8000.00</p>
-                    </div>
-                    <div style="clear: both;"></div>
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
+        </thead>
+        <tbody class="table-group-divider">
 
+        @foreach($paie as $paie)
+            <tr>
+                    <td>{{$paie->user->prenom}}</td>
+                    <td>{{$paie->user->nom}}</td>
+                    <td>{{$paie->user->email}}</td>
+                    <td>{{$paie->nbheure_travaille}}</td>
+                    <td>{{$avance}}</td>
+                    <td>{{$paie->montant}}</td>
+                    <td>{{$paie->created_at}}</td>
+
+            </tr>
+        @endforeach
+
+        </tbody>
+    </table>
+</div>

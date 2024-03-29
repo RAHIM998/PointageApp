@@ -1,7 +1,7 @@
 @extends('navbar')
 @section('content')
     <div class="card mt-3">
-        <h2 class="card-header text-center">Liste des employés déja rémunéré</h2>
+        <h2 class="card-header text-center">Liste des employés déja rémunéré pour ce mois</h2>
         <div class="card-body">
             <form action="{{ route('Avance.index') }}" method="GET">
                 @csrf
@@ -25,7 +25,6 @@
                 <tr>
                     <th scope="col">Prénom</th>
                     <th scope="col">Nom</th>
-                    <th scope="col">Téléphone</th>
                     <th scope="col">Email</th>
                     <th scope="col">Heurers travaillées</th>
                     <th scope="col">Montant payé</th>
@@ -40,7 +39,6 @@
                         @if($paie->user)
                             <td>{{$paie->user->prenom}}</td>
                             <td>{{$paie->user->nom}}</td>
-                            <td>{{$paie->user->telephone}}</td>
                             <td>{{$paie->user->email}}</td>
                             <td>{{$paie->nbheure_travaille}}</td>
                             <td>{{$paie->montant}}</td>
@@ -58,7 +56,6 @@
                         @else
                             <p class="text-center alert alert-danger">Un utilisateur a été supprimé !</p>
                         @endif
-
 
                     </tr>
                 @endforeach

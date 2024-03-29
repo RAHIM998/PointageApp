@@ -27,21 +27,21 @@
                 <tbody class="table-group-divider">
                 @foreach($presence as $pr)
                     <tr>
-                        <td>{{$pr['prenom']}}</td>
-                        <td>{{$pr['nom']}}</td>
-                        <td>{{$pr['heure_entree']}}</td>
-                        <td>{{$pr['heure_sortie'] ? : 'Encore présent dans l\'entreprise'}}</td>
+                        <td>{{$pr->user->prenom}}</td>
+                        <td>{{$pr->user->nom}}</td>
+                        <td>{{$pr->heure_entree}}</td>
+                        <td>{{$pr->heure_sortie ? : 'Encore présent dans l\'entreprise'}}</td>
 
                         <td>
                             <div class="d-inline">
                                 @if($role)
-                                    <form method="post" action="{{route('Suppresion', $pr['id'])}}">
+                                    <form method="post" action="{{route('Suppresion', $pr->id)}}">
                                         @csrf
                                         @method('delete')
                                         <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
                                     </form>
                                 @endif
-                                <a href="{{route('Details', $pr['id'])}}" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-circle-info"></i></a>
+                                <a href="{{route('Details', $pr->id)}}" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-circle-info"></i></a>
                             </div>
 
                         </td>

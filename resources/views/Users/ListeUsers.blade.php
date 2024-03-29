@@ -50,10 +50,12 @@
                             <a href="{{route('User.edit', $u->id)}}" class="btn btn-outline-primary btn-sm"><i class="fa-regular fa-pen-to-square"></i></a>
                             <a href="{{route('User.show', $u->id)}}" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-circle-info"></i></a>
 
-                            <form method="post" action="{{route('generatebulletin', $u->id)}}" id="pay{{$u->id}}">
+                            <form method="post" action="{{ route('generatebulletin', $u->id) }}" id="pay{{$u->id}}" onsubmit="return confirmPay({{$u->id}})" target="_blank">
                                 @csrf
-                                <button onclick="return confirmPay({{$u->id}})" type="submit" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-dollar-sign"></i></button>
+                                <button type="submit" class="btn btn-outline-success btn-sm"><i class="fa-solid fa-dollar-sign"></i></button>
                             </form>
+
+
                         </td>
                     </tr>
                 @endforeach

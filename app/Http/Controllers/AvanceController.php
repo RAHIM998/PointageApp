@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Avance;
+use App\Models\Paiement;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -10,27 +11,21 @@ use SebastianBergmann\CodeUnit\Exception;
 
 class AvanceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    //Fonction d'affichage
     public function index()
     {
         $avance = Avance::with('user')->get();
         return view('Paiements.ListeAvances', ['avance' => $avance]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    //Fonction d'appel du formulaire d'ajout
     public function create()
     {
         $avance = null;
         return view('Paiements.AjoutAvance', ['avance' => $avance]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    //Fonction de sauvegarde
     public function store(Request $request)
     {
         $cni = $request->input('carte');
@@ -57,17 +52,7 @@ class AvanceController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
+    //Fonction d'appel du formulaire de modification
     public function edit(string $id)
     {
         try {
@@ -81,17 +66,14 @@ class AvanceController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    //Fonction de modification
     public function update(Request $request, string $id)
     {
-        $avanceEdit = Avance::find($id);
-        $cni = $request->input('carte');
-        $user = User::where('cni', $cni)->first();
-        if ($avanceEdit && $user) {
-            $avanceEdit->update([
-                'user_id' => $user->id,
+        $AvanceEdit = Avance::with('user')->find($id);
+
+        if ($AvanceEdit && $AvanceEdit->user) {
+            $AvanceEdit->update([
+                'user_id' => $AvanceEdit->user->id,
                 'date' => Carbon::now()->toDateString(),
                 'montant' => $request->montant
             ]);
@@ -101,9 +83,7 @@ class AvanceController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    //Fonction de suppression
     public function destroy(string $id)
     {
         Avance::destroy($id);
